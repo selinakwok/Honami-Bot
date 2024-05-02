@@ -197,9 +197,10 @@ async def reminder():
                 uids = cur.execute("SELECT uid FROM meltUsers WHERE mid = :mid",
                                    {"mid": mid})
                 uids = uids.fetchall()
-                users = []
-                not_registered = ""
                 uids = [uid[0] for uid in uids]
+
+                """users = []
+                not_registered = ""
                 for u in uids:
                     skill = cur.execute("SELECT skill FROM bigFace WHERE uid = :uid",
                                         {"uid": u})
@@ -210,10 +211,14 @@ async def reminder():
                         skill = 2.5
                         not_registered = "\n<:0_sacabambaspis:1125767872476610570> 站位未確認: 有人沒用`$laf_r`登記跑隊倍率 <:ln_hnm_sorry:1015609265035161650>"
                     users.append([u, skill])
-                users.sort(key=lambda x: x[1], reverse=True)
-                uids = ["<@" + u[0] + ">" for u in users]
-                order = ['', '', '', '', '']
+                users.sort(key=lambda x: x[1], reverse=True)"""
+
+                uids = ["<@" + u + ">" for u in uids]
                 message = ""
+                for mention in uids:
+                    message = message + " " + mention
+
+                """# order = ['', '', '', '', '']
                 full = ""
                 if len(uids) == 5:
                     order[0] = uids[4]
@@ -226,7 +231,7 @@ async def reminder():
                 else:
                     for mention in uids:
                         message = message + " " + mention
-                    full = "\n<:0_sacabambaspis:1125767872476610570> 人數!=5 確認上車成員後可使用`$laf`查看大臉站位 <:ln_hnm_speechless:1011536500141338654>"
+                    full = "\n<:0_sacabambaspis:1125767872476610570> 人數!=5 確認上車成員後可使用`$laf`查看大臉站位 <:ln_hnm_speechless:1011536500141338654>"""
 
                 carNo = cur.execute("SELECT cno FROM melt WHERE dt = :now_dt AND mid = :mid",
                                     {"now_dt": now_dt, "mid": mid})
@@ -243,8 +248,7 @@ async def reminder():
                     channel = bot.get_channel(1009137745886728202)
 
                 melt_message = await channel.send(
-                    message + "\n記得5分鐘後要消體 <:ln_hnm_congratulations:1011506760080695327>" +
-                    not_registered + full + "\n(請按反應簽到 <:ln_hnm_fufufu:1011536521469366292>)")
+                    message + "\n記得5分鐘後要消體 <:ln_hnm_congratulations:1011506760080695327>\n(請按反應簽到 <:ln_hnm_fufufu:1011536521469366292>)")
                 emoji = bot.get_emoji(1011536521469366292)
                 await melt_message.add_reaction(emoji)
 
@@ -260,42 +264,14 @@ async def reminder():
                 uids = cur.execute("SELECT uid FROM shrimpUsers WHERE mid = :mid",
                                    {"mid": mid})
                 uids = uids.fetchall()
-
-                users = []
-                not_registered = ""
                 uids = [uid[0] for uid in uids]
-                for u in uids:
-                    skill = cur.execute("SELECT skill FROM shrimpSkill WHERE uid = :uid",
-                                        {"uid": u})
-                    skill = skill.fetchone()
-                    if skill:
-                        skill = skill[0]
-                    else:
-                        skill = 2.5
-                        not_registered = "\n<:0_sacabambaspis:1125767872476610570> 站位未確認: 有人沒用`$shrimp_r`登記拍蝦隊伍倍率 <:ln_hnm_sorry:1015609265035161650>"
-                    users.append([u, skill])
-                users.sort(key=lambda x: x[1], reverse=True)
-                uids = ["<@" + u[0] + ">" for u in users]
-                order = ['', '', '', '', '']
                 message = ""
-                full = ""
-                if len(uids) == 5:
-                    order[0] = uids[2]
-                    order[1] = uids[3]
-                    order[2] = uids[4]
-                    order[3] = uids[1]
-                    order[4] = uids[0]
-                    for mention in order:
-                        message = message + " " + mention
-                else:
-                    for mention in uids:
-                        message = message + " " + mention
-                    full = "\n<:0_sacabambaspis:1125767872476610570> 人數!=5 確認上車成員後可使用`$shrimp`查看蝦車站位 <:ln_hnm_speechless:1011536500141338654>"
-
+                for mention in uids:
+                    message = message + " " + mention
                 channel = bot.get_channel(1055586909776252938)
                 shrimp_message = await channel.send(
-                    message + "\n5分鐘後來拍蝦 <a:slapshrimp:1120737597979893810> <a:ln_hnm_pet:1082662447569186816>" +
-                    not_registered + full + "\n(請按反應簽到 <:ln_hnm_fufufu:1011536521469366292>)")
+                    message + "\n5分鐘後來拍蝦 <a:slapshrimp:1120737597979893810> <a:ln_hnm_pet:1082662447569186816>"
+                              "\n(請按反應簽到 <:ln_hnm_fufufu:1011536521469366292>)")
                 emoji = bot.get_emoji(1011536521469366292)
                 await shrimp_message.add_reaction(emoji)
 
@@ -990,17 +966,11 @@ async def honami(ctx):
                                       "\n\n**$dall**\n刪除所有提醒事項"
                                       "\n\n**$me**\n查看自己所有提醒事項"
                                       "\n\n**$r <url>**\n用發車信息的鏈接查看該消體車的報班紀錄等資訊"
-                                      "\n\n**$laf_r <skill>**\n登記或更新消體跑隊倍率"
-                                      "\n\n**$laf <u1> <u2> <u3> <u4> <u5>**\n查看指定成員的大臉站位"
-                                      "\nu1-u5: @要上大臉車的五位成員"
-                                      "\n\n**$shrimp_r <skill>**\n登記或更新拍蝦隊伍倍率"
-                                      "\n\n**$shrimp <u1> <u2> <u3> <u4> <u5>**\n查看指定成員的蝦車站位"
-                                      "\nu1-u5: @要上蝦車的五位成員"
                                       "\n\n**$refillstart**\n開始每兩分鐘一次的回體提醒"
                                       "\n\n**$refillstop**\n停止每兩分鐘一次的回體提醒"
                                       "\n\n**$honami**\n顯示此指令介紹，指令表會定期更新\n** **",
                           colour=0xed6565)
-    embed.set_footer(text="最後更新: 15/7/2023")
+    embed.set_footer(text="最後更新: 3/5/2024")
     await ctx.send(embed=embed)
 
 
