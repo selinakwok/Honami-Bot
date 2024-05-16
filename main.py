@@ -264,16 +264,17 @@ async def reminder():
                 uids = cur.execute("SELECT uid FROM shrimpUsers WHERE mid = :mid",
                                    {"mid": mid})
                 uids = uids.fetchall()
-                uids = [uid[0] for uid in uids]
-                message = ""
-                for mention in uids:
-                    message = message + " " + mention
-                channel = bot.get_channel(1055586909776252938)
-                shrimp_message = await channel.send(
-                    message + "\n5分鐘後來拍蝦 <a:slapshrimp:1120737597979893810> <a:ln_hnm_pet:1082662447569186816>"
-                              "\n(請按反應簽到 <:ln_hnm_fufufu:1011536521469366292>)")
-                emoji = bot.get_emoji(1011536521469366292)
-                await shrimp_message.add_reaction(emoji)
+                uids = ["<@" + uid[0] + ">" for uid in uids]
+                if uids:
+                    message = ""
+                    for mention in uids:
+                        message = message + " " + mention
+                    channel = bot.get_channel(1055586909776252938)
+                    shrimp_message = await channel.send(
+                        message + "\n5分鐘後來拍蝦 <a:slapshrimp:1120737597979893810> <a:ln_hnm_pet:1082662447569186816>"
+                                  "\n(請按反應簽到 <:ln_hnm_fufufu:1011536521469366292>)")
+                    emoji = bot.get_emoji(1011536521469366292)
+                    await shrimp_message.add_reaction(emoji)
 
     # ----- refill reminder -----
     if now_dt[-4:] in ["0000", "0200", "0400", "0600", "0800", "1000", "1200", "1400", "1600", "1800", "2000",
